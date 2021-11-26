@@ -37,7 +37,6 @@ public class Node implements NodeData {
             N = N.replace("{", "");
             N = N.substring(1, N.length() - 2);
             String[] Nodes = N.split("}, ");
-
             Nodes[index] = Nodes[index].replace("pos=", "");
             String[] tmp = Nodes[index].split(",");
             tmp[3] = tmp[3].replace(" id=", "");
@@ -57,6 +56,12 @@ public class Node implements NodeData {
         this.id = 0;
     }
 
+    public Node(Landmark pos, String info, int id) {
+        this.pos = pos;
+        this.tag = 0;
+        this. id = id;
+        this.info = info;
+    }
 
     @Override
     public int getKey() {

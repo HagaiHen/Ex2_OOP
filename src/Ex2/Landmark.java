@@ -44,6 +44,12 @@ public class Landmark implements GeoLocation {
         this.z = 0;
     }
 
+    public Landmark(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     @Override
     public String toString() {
         return "Landmark{" +

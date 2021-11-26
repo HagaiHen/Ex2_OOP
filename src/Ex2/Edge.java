@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+//TODO: test
+
 public class Edge implements EdgeData {
 
     private int src;
@@ -16,7 +18,6 @@ public class Edge implements EdgeData {
     private String info;
     public static final int WHITE = 0, GREY = 1, BLACK = 2;
     private int tag;
-
 
     public Edge(String json_file, int index) {
         try {
@@ -42,6 +43,7 @@ public class Edge implements EdgeData {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        this.info = "";
     }
 
     public Edge() {
@@ -50,6 +52,14 @@ public class Edge implements EdgeData {
         this.info = "";
         this.src = 0;
         this.dest = 0;
+    }
+
+    public Edge(int src, int dest, double weight, String info) {
+        this.src = src;
+        this.dest = dest;
+        this.weight = weight;
+        this.info = info;
+        this.tag = 0;
     }
 
     @Override
@@ -98,6 +108,5 @@ public class Edge implements EdgeData {
     public void setTag(int t) {
         this.tag = t;
     }
-
 
 }
