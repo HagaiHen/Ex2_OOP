@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-//TODO: test
+
 
 public class MyGraph implements DirectedWeightedGraph {
     int nodesSize, edgesSize, MC;
@@ -55,7 +55,7 @@ public class MyGraph implements DirectedWeightedGraph {
             key = key + ",";
             key = key + Integer.toString(e.getDest());
             this.edges.put(key, new Edge(json_file, i));
-            int tmp = e.getSrc();
+            //int tmp = e.getSrc();
             this.ConnectedTo[e.getSrc()].add(e);
         }
         this.MC = 0;
@@ -76,6 +76,7 @@ public class MyGraph implements DirectedWeightedGraph {
             this.edgeItr = edges.values().iterator();
         }
     }
+
     public ArrayList<EdgeData>[] getConnectedTo() {
         return ConnectedTo;
     }
@@ -174,7 +175,7 @@ public class MyGraph implements DirectedWeightedGraph {
     }
 
     @Override
-    public NodeData removeNode(int key) { //TODO: remove all edges from the hashmap
+    public NodeData removeNode(int key) {
         this.nodesSize--;
         NodeData tmp = this.nodes.get(key);
         this.nodes.remove(key);

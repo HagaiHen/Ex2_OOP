@@ -12,7 +12,7 @@ public class Ex2 {
      * @param json_file - a json file (e.g., G1.json - G3.gson)
      * @return
      */
-    public static DirectedWeightedGraph getGrapg(String json_file) {
+    public static DirectedWeightedGraph getGraph(String json_file) {
         DirectedWeightedGraph ans = null;
         // ****** Add your code here ******
         //

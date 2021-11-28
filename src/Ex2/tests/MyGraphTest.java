@@ -4,6 +4,7 @@ import Ex2.Edge;
 import Ex2.Landmark;
 import Ex2.MyGraph;
 import Ex2.Node;
+import Ex2.api.EdgeData;
 import Ex2.api.NodeData;
 import org.junit.jupiter.api.Test;
 
@@ -63,30 +64,48 @@ class MyGraphTest {
     }
 
     @Test
-    void nodeIter() { //point to another place with the same values
-        //HashMap<Integer, NodeData> tmp = g.getNodes();
+    void nodeIter() {
         Iterator<NodeData> it = g.nodeIter();
         int i = 0;
-        boolean b = true;
-        it.next();
-        while(it.hasNext()) {
-            if (it != g.getNodes().get(i)) {
-                b = false;
-            }
+        while (it.hasNext()) {
+            NodeData n = it.next();
+            assertEquals(n.getKey(), g.getNodes().get(i).getKey());
+            assertEquals(n.getInfo(), g.getNodes().get(i).getInfo());
+            assertEquals(n.getLocation(), g.getNodes().get(i).getLocation());
+            assertEquals(n.getTag(), g.getNodes().get(i).getTag());
             i++;
-            it.next();
         }
-        assertTrue(b);
-
-
     }
 
     @Test
     void edgeIter() {
+        Iterator<EdgeData> it = g.edgeIter();
+        int i = 0;
+        while (it.hasNext()) {
+            EdgeData e = it.next();
+            String key = e.getSrc() + "," + e.getDest();
+            assertEquals(e.getWeight(), g.getEdges().get(key).getWeight());
+            assertEquals(e.getSrc(), g.getEdges().get(key).getSrc());
+            assertEquals(e.getDest(), g.getEdges().get(key).getDest());
+            assertEquals(e.getInfo(), g.getEdges().get(key).getInfo());
+            assertEquals(e.getTag(), g.getEdges().get(key).getTag());
+            i++;
+        }
+
     }
 
     @Test
     void testEdgeIter() {
+        Iterator<EdgeData> it = g.edgeIter(0);
+
+        while (it.hasNext()) {
+            EdgeData e = it.next();
+            String key = e.getSrc() + "," + e.getDest();
+            assertEquals(e.getSrc(), 0);
+            assertEquals(e.getDest(), g.getEdge(0, e.getDest()).getDest());
+            assertEquals(e.getWeight(), g.getEdge(e.getSrc(), e.getDest()).getWeight());
+            assertEquals(e.getTag(), g.getEdge(e.getSrc(), e.getDest()).getTag());
+        }
     }
 
     @Test
@@ -115,9 +134,9 @@ class MyGraphTest {
     void removeEdge() {
         int size = g.edgeSize();
         boolean b = false;
-        g.removeEdge(0,1);
+        g.removeEdge(0, 1);
         assertEquals(size, g.edgeSize() + 1);
-        if (g.getEdge(0,1) == null) {
+        if (g.getEdge(0, 1) == null) {
             b = true;
         }
         assertTrue(b);
@@ -133,14 +152,14 @@ class MyGraphTest {
     @Test
     void edgeSize() {
         assertTrue(g.edgeSize() == 166);
-        g.removeEdge(0,1);
+        g.removeEdge(0, 1);
         assertTrue(g.edgeSize() == 165);
     }
 
     @Test
     void getMC() {
         assertTrue(g.getMC() == 0);
-        g.removeEdge(4,5);
+        g.removeEdge(4, 5);
         assertTrue(g.getMC() == 1);
         g.removeNode(0);
         assertTrue(g.getMC() == 6);

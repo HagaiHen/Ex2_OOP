@@ -1,13 +1,17 @@
 package Ex2.tests;
 
 import Ex2.Landmark;
+import Ex2.MyGraph;
 import Ex2.Node;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.FileWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class main {
     public static void main(String[] args) {
@@ -84,7 +88,17 @@ public class main {
         tmp.setInfo(n.getInfo());
         System.out.println("tmp is: " + tmp);
 
+        MyGraph g1 = new MyGraph("src/Ex2/data/G3.json");
+        MyGraph g2 = new MyGraph(g1.getEdges(), g1.getNodes());
+        System.out.println(g1 + "," + g2);
 
+        Stack s = new Stack();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try {
+            gson.toJson(g1, new FileWriter("src/Ex2/data/file.json"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
