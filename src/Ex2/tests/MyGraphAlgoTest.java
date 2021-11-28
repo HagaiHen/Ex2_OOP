@@ -1,5 +1,7 @@
-package Ex2;
+package Ex2.tests;
 
+import Ex2.MyGraph;
+import Ex2.MyGraphAlgo;
 import Ex2.api.DirectedWeightedGraph;
 import Ex2.api.EdgeData;
 import Ex2.api.NodeData;
