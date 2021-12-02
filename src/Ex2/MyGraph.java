@@ -14,12 +14,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 
-
 public class MyGraph implements DirectedWeightedGraph {
     int nodesSize, edgesSize, MC;
     HashMap<String, EdgeData> edges;
     HashMap<Integer, NodeData> nodes;
     Iterator<EdgeData> edgeItr;
+
     Iterator<NodeData> nodeItr;
     ArrayList<EdgeData>[] ConnectedTo;
 
@@ -75,6 +75,7 @@ public class MyGraph implements DirectedWeightedGraph {
             this.nodeItr = nodes.values().iterator();
             this.edgeItr = edges.values().iterator();
         }
+        this.ConnectedTo = new ArrayList[nodesSize];
     }
 
     public ArrayList<EdgeData>[] getConnectedTo() {
@@ -115,7 +116,7 @@ public class MyGraph implements DirectedWeightedGraph {
     }
 
     @Override
-    public void addNode(NodeData n) {
+    public void addNode(NodeData n) { //TODO: add to the ConnectedTo
         this.nodesSize++;
         Node tmp = new Node();
         tmp.setTag(n.getTag());
@@ -128,7 +129,7 @@ public class MyGraph implements DirectedWeightedGraph {
     }
 
     @Override
-    public void connect(int src, int dest, double w) {
+    public void connect(int src, int dest, double w) { //TODO: add to the ConnectedTo
         this.edgesSize++;
         Edge tmpEdge = new Edge();
         tmpEdge.setDest(dest);
@@ -175,7 +176,7 @@ public class MyGraph implements DirectedWeightedGraph {
     }
 
     @Override
-    public NodeData removeNode(int key) {
+    public NodeData removeNode(int key) { //TODO: remove the itartor
         this.nodesSize--;
         NodeData tmp = this.nodes.get(key);
         this.nodes.remove(key);
@@ -190,13 +191,16 @@ public class MyGraph implements DirectedWeightedGraph {
     }
 
     @Override
-    public EdgeData removeEdge(int src, int dest) {
+    public EdgeData removeEdge(int src, int dest) { //TODO: remove the itartor
         String key = Integer.toString(src) + "," + Integer.toString(dest);
         EdgeData tmp = this.edges.get(key);
         this.edges.remove(key);
         this.edgesSize--;
         MC++;
         return tmp;
+    }
+    public void setMC(int MC) {
+        this.MC = MC;
     }
 
     @Override

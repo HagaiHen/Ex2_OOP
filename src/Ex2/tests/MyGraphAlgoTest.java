@@ -61,11 +61,24 @@ class MyGraphAlgoTest {
     }
 
     @Test
-    void isConnected() {
+    void isConnected() { //To complete
+        MyGraph tmp = new MyGraph("src/Ex2/data/G1.json");
+        MyGraphAlgo Conntected = new MyGraphAlgo(tmp);
+        assertTrue(Conntected.isConnected());
+        tmp = new MyGraph("src/Ex2/data/G1_copy.json");
+        MyGraphAlgo NotConnected = new MyGraphAlgo(tmp);
+        assertFalse(NotConnected.isConnected());
     }
 
     @Test
     void shortestPathDist() {
+        MyGraph g = new MyGraph("src/Ex2/data/G3.json");
+        MyGraphAlgo graph = new MyGraphAlgo(g);
+
+        System.out.println(graph.shortestPathDist(15,40));
+        System.out.println(graph.shortestPath(15,40).get(0));
+        System.out.println(graph.shortestPath(15,40).get(1));
+        System.out.println(graph.shortestPath(15,40).get(2));
     }
 
     @Test
