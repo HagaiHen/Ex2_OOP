@@ -7,7 +7,9 @@ import Ex2.api.EdgeData;
 import Ex2.api.NodeData;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,11 +76,7 @@ class MyGraphAlgoTest {
     void shortestPathDist() {
         MyGraph g = new MyGraph("src/Ex2/data/G3.json");
         MyGraphAlgo graph = new MyGraphAlgo(g);
-
-        System.out.println(graph.shortestPathDist(15,40));
-        System.out.println(graph.shortestPath(15,40).get(0));
-        System.out.println(graph.shortestPath(15,40).get(1));
-        System.out.println(graph.shortestPath(15,40).get(2));
+        assertEquals(1.7420530403455134, this.g2.shortestPathDist(15,40));
     }
 
     @Test
@@ -91,6 +89,15 @@ class MyGraphAlgoTest {
 
     @Test
     void tsp() {
+        MyGraph g = new MyGraph("src/Ex2/data/G3.json");
+        MyGraphAlgo graph = new MyGraphAlgo(g);
+        List<NodeData> n = new ArrayList<>();
+        n.add(this.g.getNode(0));
+        n.add(this.g.getNode(1));
+        n.add(this.g.getNode(2));
+        n.add(this.g.getNode(3));
+        n.add(this.g.getNode(9));
+        graph.tsp(n);
     }
 
     @Test

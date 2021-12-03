@@ -2,7 +2,6 @@ package Ex2.tests;
 
 import Ex2.Landmark;
 import Ex2.MyGraph;
-import Ex2.MyGraphAlgo;
 import Ex2.Node;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -96,14 +95,10 @@ public class main {
         Stack s = new Stack();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
-            gson.toJson(g1, new FileWriter("src/Ex2/data/file.json"));
+            gson.toJson(g1, new FileWriter("src/Ex2/data/file1.json"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        MyGraph g = new MyGraph("src/Ex2/data/G1_copy.json");
-        MyGraphAlgo graph = new MyGraphAlgo(g);
-        System.out.println(graph.isConnected());
     }
 
 

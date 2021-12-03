@@ -15,12 +15,11 @@ import java.util.Iterator;
 
 
 public class MyGraph implements DirectedWeightedGraph {
+
     int nodesSize, edgesSize, MC;
     HashMap<String, EdgeData> edges;
     HashMap<Integer, NodeData> nodes;
-
     Iterator<EdgeData> edgeItr;
-
     Iterator<NodeData> nodeItr;
     ArrayList<EdgeData>[] ConnectedTo;
 

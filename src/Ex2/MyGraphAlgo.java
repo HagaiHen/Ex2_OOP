@@ -254,7 +254,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         return ans;
     }
 
-    private double [] shortestPathList(int src) {
+    private double[] shortestPathList(int src) {
         List<Integer> prev = new ArrayList<>();
         List<Double> dist = new ArrayList<>();
         PriorityQueue<Integer> q = new PriorityQueue<>();
@@ -312,6 +312,53 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         return arr;
     }
 
+    private List<Double> shortestPathListDist(int src) {
+        List<Integer> prev = new ArrayList<>();
+        List<Double> dist = new ArrayList<>();
+        PriorityQueue<Integer> q = new PriorityQueue<>();
+
+        Iterator<NodeData> it = this.g.nodeIter();
+        NodeData n = new Node();
+
+        while (it.hasNext()) {
+            n = it.next();
+            if (n.getKey() != src)
+                dist.add(n.getKey(), Double.MAX_VALUE);
+            else {
+                dist.add(n.getKey(), null);
+            }
+            prev.add(n.getKey(), null);
+            q.add(n.getKey());
+        }
+        dist.remove(src);
+        dist.add(src, 0.0);
+        int u = src;
+        while (!q.isEmpty()) {
+            //int tmp = u;
+            u = dist(dist, q, u);
+            //dist.remove(u);
+            //dist.add(u, this.g.getEdge(tmp, u).getWeight());
+            q.remove(u);
+
+            Iterator<Integer> iter = q.iterator();
+            double alt = 0;
+            int node = 0;
+            while (iter.hasNext()) {
+                node = iter.next();
+                if (this.g.getEdge(u, node) != null && u != src && node != 0) {
+                    alt = dist.get(u) + this.g.getEdge(u, node).getWeight();
+                    if (alt < dist.get(node)) {
+                        dist.remove(node);
+                        dist.add(node, alt);
+                        prev.remove(node);
+                        prev.add(node, u);
+                    }
+                }
+            }
+        }
+        return dist;
+    }
+
     @Override
     public NodeData center() {
         Iterator<NodeData> it = this.g.nodeIter();
@@ -332,14 +379,65 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         return this.g.getNode(min_index);
     }
 
+
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        int src = cities.get(0).getKey();
-        int dest = cities.get(1).getKey();
-        double sum = 0;
-        List<NodeData> res = new ArrayList<>();
-        for (int i = 0; i < cities.size(); i++) {
-            //res.add(shortestPath(src,dest));
+        HashMap<Integer, List<Double>> dist = new HashMap<>();
+        int src = 0 , dest = 0;
+        double min = Double.MAX_VALUE;
+        for (NodeData n : cities) {
+            dist.put(n.getKey(), shortestPathListDist(n.getKey()));
+        }
+        Iterator<Integer> itrNode = dist.keySet().iterator();
+
+        int n1 = 0;
+        Iterator<List<Double>> itrlists = dist.values().iterator();
+        List<Double> tmp = new ArrayList<>();
+        while (itrNode.hasNext()) {
+            n1 = itrNode.next();
+            tmp = itrlists.next();
+            for (NodeData n : cities) {
+                if (tmp.get(n.getKey()) < min && tmp.get(n.getKey()) > 0 && n.getKey() != n1) {
+                    min = tmp.get(n.getKey());
+                    src = n1;
+                    dest = n.getKey();
+                }
+            }
+        }
+        List <NodeData> ans = new ArrayList<>();
+        ans.add(this.g.getNode(src));
+        ans.add(this.g.getNode(dest));
+        ArrayList<NodeData> citiesCopy = new ArrayList<>();
+        for (NodeData n : cities) {
+            citiesCopy.add(n);
+        }
+        int i = 0;
+        for (NodeData n : cities) {
+
+            if (citiesCopy.get(i).getKey() == src) {
+                citiesCopy.remove(i);
+                i--;
+            }
+            if (citiesCopy.get(i).getKey() == dest) {
+                citiesCopy.remove(i);
+                i--;
+            }
+            i++;
+        }
+        int check = dest;
+        int indx = 0;
+        double minDest = Double.MAX_VALUE;
+        List<Double> tmpDest = new ArrayList<>();
+        while (cities.size() != ans.size()) {
+           tmpDest = shortestPathListDist(check);
+            for (double t : tmpDest) {
+                if(minDest > t && t != 0) {
+                    minDest = t;
+                    indx = tmpDest.indexOf(t);
+                    ans.add(this.g.getNode(indx));
+                    check = indx;
+                }
+            }
 
         }
 
