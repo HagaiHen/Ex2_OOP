@@ -18,6 +18,7 @@ public class MyGraph implements DirectedWeightedGraph {
     int nodesSize, edgesSize, MC;
     HashMap<String, EdgeData> edges;
     HashMap<Integer, NodeData> nodes;
+
     Iterator<EdgeData> edgeItr;
 
     Iterator<NodeData> nodeItr;
@@ -38,7 +39,6 @@ public class MyGraph implements DirectedWeightedGraph {
             String[] Nodes = N.split("}, ");
             this.nodesSize = Nodes.length;
             this.edgesSize = Edges.length;
-            //ArrayList<Integer> a = new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();
         }
