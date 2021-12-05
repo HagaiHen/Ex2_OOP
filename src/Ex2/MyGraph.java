@@ -38,29 +38,30 @@ public class MyGraph implements DirectedWeightedGraph {
             String[] Nodes = N.split("}, ");
             this.nodesSize = Nodes.length;
             this.edgesSize = Edges.length;
+
+            this.edges = new HashMap<>();
+            this.nodes = new HashMap<>();
+            this.ConnectedTo = new ArrayList[nodesSize];
+            for (int i = 0; i < this.nodesSize; i++) {
+                this.nodes.put(i, new Node(Nodes[i]));
+                this.ConnectedTo[i] = new ArrayList<>();
+            }
+            for (int i = 0; i < this.edgesSize; i++) {
+                Edge e = new Edge(Edges[i]);
+                String key = Integer.toString(e.getSrc());
+                key = key + ",";
+                key = key + Integer.toString(e.getDest());
+                this.edges.put(key, e);
+                //int tmp = e.getSrc();
+                this.ConnectedTo[e.getSrc()].add(e);
+            }
+            this.MC = 0;
+            if (!nodes.isEmpty() && !edges.isEmpty()) {
+                this.nodeItr = nodes.values().iterator();
+                this.edgeItr = edges.values().iterator();
+            }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        this.edges = new HashMap<>();
-        this.nodes = new HashMap<>();
-        this.ConnectedTo = new ArrayList[nodesSize];
-        for (int i = 0; i < this.nodesSize; i++) {
-            this.nodes.put(i, new Node(json_file, i));
-            this.ConnectedTo[i] = new ArrayList<>();
-        }
-        for (int i = 0; i < this.edgesSize; i++) {
-            Edge e = new Edge(json_file, i);
-            String key = Integer.toString(e.getSrc());
-            key = key + ",";
-            key = key + Integer.toString(e.getDest());
-            this.edges.put(key, new Edge(json_file, i));
-            //int tmp = e.getSrc();
-            this.ConnectedTo[e.getSrc()].add(e);
-        }
-        this.MC = 0;
-        if (!nodes.isEmpty() && !edges.isEmpty()) {
-            this.nodeItr = nodes.values().iterator();
-            this.edgeItr = edges.values().iterator();
         }
     }
 
@@ -129,6 +130,7 @@ public class MyGraph implements DirectedWeightedGraph {
 
     @Override
     public void connect(int src, int dest, double w) { //TODO: add to the ConnectedTo
+        //TODO: theres is no same edge with different weight, override
         this.edgesSize++;
         Edge tmpEdge = new Edge();
         tmpEdge.setDest(dest);
@@ -198,6 +200,7 @@ public class MyGraph implements DirectedWeightedGraph {
         MC++;
         return tmp;
     }
+
     public void setMC(int MC) {
         this.MC = MC;
     }

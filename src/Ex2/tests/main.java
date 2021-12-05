@@ -1,17 +1,7 @@
 package Ex2.tests;
 
-import Ex2.Landmark;
 import Ex2.MyGraph;
-import Ex2.Node;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.FileWriter;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Stack;
+import Ex2.MyGraphAlgo;
 
 public class main {
     public static void main(String[] args) {
@@ -53,7 +43,7 @@ public class main {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-*/
+
         int index = 0;
         try {
             Gson gson = new Gson();
@@ -99,7 +89,31 @@ public class main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        double startTime = System.currentTimeMillis();
+        HashMap<String, EdgeData> edge = new HashMap<>();
+        HashMap<Integer, NodeData> node = new HashMap<>();
+        Random r = new Random();
+        int i = 0, src, dest;
+        double w = 0;
+        String key = "";
+        EdgeData e = new Edge();
+        NodeData n = new Node();
+        Landmark pos = new Landmark();
+        MyGraph g = new MyGraph(edge, node);
+        int j = 0;
+        int check = 10000;
+
+ */
+//        GenerateGraph gg = new GenerateGraph(10000*4, 10000);
+//        gg.GenerateJson(gg);
+        double startTime = System.currentTimeMillis();
+        MyGraph g = new MyGraph("src/Ex2/data/new.json");
+        MyGraphAlgo algo = new MyGraphAlgo(g);
+        double minTime = System.currentTimeMillis();
+        System.out.println((minTime - startTime) / 1000);
+        System.out.println(algo.center().getKey());
+        double endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) / 1000);
     }
-
-
 }

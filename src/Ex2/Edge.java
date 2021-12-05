@@ -62,6 +62,18 @@ public class Edge implements EdgeData {
         this.tag = 0;
     }
 
+    public Edge(String e) {
+        String[] ed = e.split(", ");
+        ed[0] = ed[0].replace("src=", "");
+        ed[1] = ed[1].replace("w=", "");
+        ed[2] = ed[2].replace("dest=", "");
+        this.src = (int) Double.parseDouble(ed[0]);
+        this.weight = Double.parseDouble(ed[1]);
+        this.dest = (int) Double.parseDouble(ed[2]);
+        this.tag = 0;
+        this.info = "";
+    }
+
     @Override
     public int getSrc() {
         return this.src;

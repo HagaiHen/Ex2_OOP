@@ -102,6 +102,7 @@ class MyGraphAlgoTest {
 
     @Test
     void save() {
+        g2.save("src/Ex2/data/new2.json");
     }
 
     @Test

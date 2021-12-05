@@ -383,7 +383,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
         HashMap<Integer, List<Double>> dist = new HashMap<>();
-        int src = 0 , dest = 0;
+        int src = 0, dest = 0;
         double min = Double.MAX_VALUE;
         for (NodeData n : cities) {
             dist.put(n.getKey(), shortestPathListDist(n.getKey()));
@@ -404,7 +404,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
                 }
             }
         }
-        List <NodeData> ans = new ArrayList<>();
+        List<NodeData> ans = new ArrayList<>();
         ans.add(this.g.getNode(src));
         ans.add(this.g.getNode(dest));
         ArrayList<NodeData> citiesCopy = new ArrayList<>();
@@ -424,24 +424,29 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             }
             i++;
         }
-        int check = dest;
-        int indx = 0;
         double minDest = Double.MAX_VALUE;
         List<Double> tmpDest = new ArrayList<>();
-        while (cities.size() != ans.size()) {
-           tmpDest = shortestPathListDist(check);
-            for (double t : tmpDest) {
-                if(minDest > t && t != 0) {
-                    minDest = t;
-                    indx = tmpDest.indexOf(t);
-                    ans.add(this.g.getNode(indx));
-                    check = indx;
+        int check = dest;
+        int indx = 0;
+        int k = 0;
+        int tmpIndx = 0;
+        while (ans.size() != cities.size()) {
+            k = 0;
+            minDest = Double.MAX_VALUE;
+            for (NodeData n : citiesCopy) {
+                tmpDest = shortestPathListDist(check);
+                if (tmpDest.get(n.getKey()) < minDest) {
+                    minDest = tmpDest.get(n.getKey());
+                    indx = n.getKey();
+                    tmpIndx = k;
                 }
+                k++;
             }
-
+            citiesCopy.remove(tmpIndx);
+            ans.add(this.g.getNode(indx));
+            check = indx;
         }
-
-        return null;
+        return ans;
     }
 
     @Override

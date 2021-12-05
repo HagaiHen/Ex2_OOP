@@ -1,7 +1,9 @@
 package Ex2;
+
 import Ex2.api.GeoLocation;
 import Ex2.api.NodeData;
 import com.google.gson.Gson;
+
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -49,7 +51,7 @@ public class Node implements NodeData {
         }
     }
 
-    public Node () {
+    public Node() {
         this.pos = new Landmark();
         this.tag = 0;
         this.info = "";
@@ -59,8 +61,22 @@ public class Node implements NodeData {
     public Node(Landmark pos, String info, int id) {
         this.pos = pos;
         this.tag = 0;
-        this. id = id;
+        this.id = id;
         this.info = info;
+    }
+
+    public Node(String n) {
+        String[] node = n.split(", ");
+        node[0] = node[0].replace("pos=", "");
+        String[] pos = node[0].split(",");
+        double x = Double.parseDouble(pos[0]);
+        double y = Double.parseDouble(pos[1]);
+        double z = Double.parseDouble(pos[2]);
+        Landmark l = new Landmark(x, y, z);
+        this.pos = l;
+        this.tag = 0;
+        node[1] = node[1].replace("id=", "");
+        this.id = (int) Double.parseDouble(node[1]);
     }
 
     @Override
