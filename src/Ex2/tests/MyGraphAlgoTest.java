@@ -7,9 +7,7 @@ import Ex2.api.EdgeData;
 import Ex2.api.NodeData;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,10 +17,15 @@ class MyGraphAlgoTest {
 
     @Test
     void init() {
+        g2.init(g);
+        assertEquals(this.g, g2.getGraph());
     }
 
     @Test
     void getGraph() {
+        DirectedWeightedGraph tmp = new MyGraph("src/Ex2/data/G3.json");
+        tmp = g2.getGraph();
+        assertEquals(tmp, g2.getGraph());
     }
 
     @Test
@@ -76,15 +79,23 @@ class MyGraphAlgoTest {
     void shortestPathDist() {
         MyGraph g = new MyGraph("src/Ex2/data/G3.json");
         MyGraphAlgo graph = new MyGraphAlgo(g);
-        assertEquals(1.7420530403455134, this.g2.shortestPathDist(15,40));
+        assertEquals(1.7420530403455134, this.g2.shortestPathDist(15, 40));
     }
 
     @Test
     void shortestPath() {
+        MyGraph g = new MyGraph("src/Ex2/data/G3.json");
+        MyGraphAlgo graph = new MyGraphAlgo(g);
+        List<NodeData> e = new ArrayList<>();
+        e.add(this.g.getNode(40));
+        e.add(this.g.getNode(39));
+        e.add(this.g.getNode(15));
+        assertEquals(e, this.g2.shortestPath(15, 40));
     }
 
     @Test
-    void center() {
+    void center() { //TODO: after GUI
+
     }
 
     @Test
@@ -97,18 +108,46 @@ class MyGraphAlgoTest {
         n.add(this.g.getNode(2));
         n.add(this.g.getNode(3));
         n.add(this.g.getNode(9));
-        graph.tsp(n);
+        n = graph.tsp(n);
+        List<NodeData> ans = new ArrayList<>();
+        ans.add(this.g.getNode(1));
+        ans.add(this.g.getNode(9));
+        ans.add(this.g.getNode(2));
+        ans.add(this.g.getNode(3));
+        ans.add(this.g.getNode(0));
+        for (int i = 0; i < ans.size(); i++) {
+            assertEquals(ans.get(i).getKey(), n.get(i).getKey());
+        }
     }
 
     @Test
     void save() {
-        g2.save("src/Ex2/data/new2.json");
+        g2.save("src/Ex2/data/new4.json");
     }
 
     @Test
     void load() {
         MyGraphAlgo graph = new MyGraphAlgo(g);
-        graph.load("src/Ex2/data/G1.json");
+        graph.load("src/Ex2/data/new4.json");
+        assertNull(this.g.getEdge(0, 100));
+        assertEquals(0.4303080890843676, this.g.getEdge(21, 33).getWeight());
+    }
+
+    @Test
+    void BFS() {
+        MyGraphAlgo graph = new MyGraphAlgo(g);
+        graph.BFS(g, 2);
+        System.out.println(g.getNode(2).getTag());
+    }
+
+    @Test
+    void DFS() {
+        HashSet<Integer> visited = new HashSet<>();
+        Queue<NodeData> qu = new LinkedList<>();
+        qu.add(g.getNode(0));
+        g2.DFS(visited, qu);
+        assertEquals(visited.size(), g2.getGraph().nodeSize());
 
     }
+
 }

@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class MyGraphTest {
@@ -31,7 +30,6 @@ class MyGraphTest {
 
     @Test
     void getEdge() {
-
         assertEquals(e.getSrc(), g.getEdge(0, 1).getSrc());
         assertEquals(e.getDest(), g.getEdge(0, 1).getDest());
         assertEquals(e.getTag(), g.getEdge(0, 1).getTag());
@@ -61,6 +59,16 @@ class MyGraphTest {
         }
         assertEquals(g.getEdge(0, 7).getWeight(), 1.2);
         assertTrue(b);
+        b = false;
+        for (EdgeData e : g.getConnectedTo()[0]) {
+            if (e.equals(g.getEdge(0, 7))) {
+                b = true;
+            }
+        }
+        assertTrue(b);
+        g.connect(0, 1, 0.5);
+        assertEquals(g.getEdge(0, 1).getWeight(), 0.5);
+
     }
 
     @Test

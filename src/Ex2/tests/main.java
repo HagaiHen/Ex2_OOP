@@ -105,14 +105,14 @@ public class main {
         int check = 10000;
 
  */
-//        GenerateGraph gg = new GenerateGraph(10000*4, 10000);
-//        gg.GenerateJson(gg);
+//        GenerateGraph gg = new GenerateGraph(100, 100);
+//        gg.GenerateJson(gg, "src/Ex2/data/100n.json");
         double startTime = System.currentTimeMillis();
-        MyGraph g = new MyGraph("src/Ex2/data/new.json");
+        MyGraph g = new MyGraph("src/Ex2/data/Test1.json");
         MyGraphAlgo algo = new MyGraphAlgo(g);
         double minTime = System.currentTimeMillis();
         System.out.println((minTime - startTime) / 1000);
-        System.out.println(algo.center().getKey());
+        System.out.println(algo.center());
         double endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime) / 1000);
     }

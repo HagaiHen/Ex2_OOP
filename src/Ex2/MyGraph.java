@@ -116,7 +116,7 @@ public class MyGraph implements DirectedWeightedGraph {
     }
 
     @Override
-    public void addNode(NodeData n) { //TODO: add to the ConnectedTo
+    public void addNode(NodeData n) {
         this.nodesSize++;
         Node tmp = new Node();
         tmp.setTag(n.getTag());
@@ -126,11 +126,16 @@ public class MyGraph implements DirectedWeightedGraph {
         tmp.setId(nodesSize - 1);
         this.nodes.put(nodesSize - 1, tmp);
         MC++;
+        ArrayList<EdgeData>[] tmpAL = new ArrayList[nodesSize];
+        for (int i = 0; i < this.nodesSize - 1; i++) {
+            tmpAL[i] = ConnectedTo[i];
+        }
+        tmpAL[nodesSize - 1] = new ArrayList<>();
+        this.ConnectedTo = tmpAL;
     }
 
     @Override
-    public void connect(int src, int dest, double w) { //TODO: add to the ConnectedTo
-        //TODO: theres is no same edge with different weight, override
+    public void connect(int src, int dest, double w) {
         this.edgesSize++;
         Edge tmpEdge = new Edge();
         tmpEdge.setDest(dest);
@@ -138,6 +143,7 @@ public class MyGraph implements DirectedWeightedGraph {
         tmpEdge.setWeight(w);
         String key = Integer.toString(src) + "," + Integer.toString(dest);
         this.edges.put(key, tmpEdge);
+        this.ConnectedTo[src].add(tmpEdge);
         MC++;
     }
 
@@ -177,7 +183,7 @@ public class MyGraph implements DirectedWeightedGraph {
     }
 
     @Override
-    public NodeData removeNode(int key) { //TODO: remove the itartor
+    public NodeData removeNode(int key) { //TODO: remove the iterator
         this.nodesSize--;
         NodeData tmp = this.nodes.get(key);
         this.nodes.remove(key);
@@ -192,7 +198,7 @@ public class MyGraph implements DirectedWeightedGraph {
     }
 
     @Override
-    public EdgeData removeEdge(int src, int dest) { //TODO: remove the itartor
+    public EdgeData removeEdge(int src, int dest) { //TODO: remove the iterator
         String key = Integer.toString(src) + "," + Integer.toString(dest);
         EdgeData tmp = this.edges.get(key);
         this.edges.remove(key);
