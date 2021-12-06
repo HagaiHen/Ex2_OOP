@@ -63,16 +63,20 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         }
     }
 
-    public void DFS(HashSet <Integer> visited,Queue<NodeData> keys) {
+    public void BFS(HashSet<Integer> visited, Queue<NodeData> keys, DirectedWeightedGraph g) {
 
         while (!keys.isEmpty()) {
             NodeData d = keys.poll();
             visited.add(d.getKey());
-            Iterator <EdgeData> it = this.g.edgeIter(d.getKey());
+            d.setTag(1);
+            Iterator<EdgeData> it = g.edgeIter(d.getKey());
             while (it.hasNext()) {
                 int dest = (it.next().getDest());
-                if (!visited.contains(dest))
+                if (!visited.contains(dest)) {
                     keys.add(g.getNode(dest));
+                    visited.add(g.getNode(dest).getKey());
+                    g.getNode(dest).setTag(1);
+                }
             }
         }
     }
@@ -107,7 +111,10 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         DirectedWeightedGraph tmp = this.copy();
         Iterator<NodeData> it = tmp.nodeIter();
         NodeData n = new Node();
-        DFS(tmp, 0);
+        HashSet<Integer> visited = new HashSet<>();
+        Queue<NodeData> qu = new LinkedList<>();
+        qu.add(this.g.nodeIter().next());
+        BFS(visited, qu, tmp);
         while (it.hasNext()) {
             n = it.next();
             if (n.getTag() == 0) {
@@ -120,9 +127,11 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             n = it.next();
             n.setTag(0);
         }
-        DFS(tmp, 0);
+        qu.clear();
+        visited.clear();
+        qu.add(tmp.nodeIter().next());
+        BFS(visited, qu, tmp);
         it = tmp.nodeIter();
-
         while (it.hasNext()) {
             n = it.next();
             if (n.getTag() == 0) {
@@ -134,11 +143,30 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
 
     @Override
     public double shortestPathDist(int src, int dest) {
-        List<Integer> prev = new ArrayList<>();
-        List<Double> dist = new ArrayList<>();
-        PriorityQueue<Integer> q = new PriorityQueue<>();
+        List<Double> ans = Dijkstra(src);
+        return ans.get(dest);
+    }
 
+    @Override
+    public List<NodeData> shortestPath(int src, int dest) {
+        List<Integer> path = DijkstraPrev(src);
+        List<NodeData> ans = new ArrayList<>();
+        int tmp = dest;
+        while (tmp != src || this.g.getEdge(src, tmp) != null) {
+            ans.add(this.g.getNode(tmp));
+            tmp = path.get(tmp);
+        }
+        ans.add(this.g.getNode(tmp));
+        return ans;
+    }
+
+    public List<Double> Dijkstra(int src) {
+        PriorityQueue<Integer> q = new PriorityQueue<>();
+        ArrayList<Double> dist = new ArrayList<>();
+        ArrayList<Integer> prev = new ArrayList<>();
         Iterator<NodeData> it = this.g.nodeIter();
+        this.save("src/Ex2/data/newJson.json");
+        MyGraph m = new MyGraph("src/Ex2/data/newJson.json");
         NodeData n = new Node();
 
         while (it.hasNext()) {
@@ -153,32 +181,194 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         }
         dist.remove(src);
         dist.add(src, 0.0);
-        int u = src;
-        while (!q.isEmpty()) {
-            int tmp = u;
-            u = dist(dist, q, tmp);
-            //dist.remove(u);
-            //dist.add(u, this.g.getEdge(tmp, u).getWeight());
-            q.remove(tmp);
-
-            Iterator<Integer> iter = q.iterator();
+        int u = src, indx = 0;
+        it = this.g.nodeIter();
+        while (q.size() != 1) {
+            double min = Double.MAX_VALUE;
+            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
+                if (dist.get(m.getConnectedTo()[u].get(i).getDest()) > m.getConnectedTo()[u].get(i).getWeight() + dist.get(u)) {
+                    double tmpDist = dist.get(u);
+                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
+                    dist.add(m.getConnectedTo()[u].get(i).getDest(), m.getConnectedTo()[u].get(i).getWeight() + tmpDist);
+                    prev.remove(m.getConnectedTo()[u].get(i).getDest());
+                    prev.add(m.getConnectedTo()[u].get(i).getDest(), u);
+                }
+                if (q.contains(m.getConnectedTo()[u].get(i).getDest()) && m.getConnectedTo()[u].get(i).getWeight() < min && m.getConnectedTo()[u].get(i).getDest() != src) {
+                    min = m.getConnectedTo()[u].get(i).getWeight();
+                    indx = m.getConnectedTo()[u].get(i).getDest();
+                }
+            }
+            if (u != indx) {
+                u = indx;
+            } else {
+                u = q.peek();
+            }
+            q.remove(u);
+            min = Double.MAX_VALUE;
             double alt = 0;
-            int node = 0;
-            while (iter.hasNext()) {
-                node = iter.next();
-                if (this.g.getEdge(tmp, node) != null && node != 0) {
-                    alt = dist.get(tmp) + this.g.getEdge(tmp, node).getWeight();
-                    if (alt < dist.get(node)) {
-                        dist.remove(node);
-                        dist.add(node, alt);
-                        prev.remove(node);
-                        prev.add(node, tmp);
-                    }
+            it = this.g.nodeIter();
+            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
+                alt = dist.get(u) + m.getConnectedTo()[u].get(i).getWeight();
+                if (alt < dist.get(m.getConnectedTo()[u].get(i).getDest())) {
+                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
+                    dist.add(m.getConnectedTo()[u].get(i).getDest(), alt);
+                    prev.remove(m.getConnectedTo()[u].get(i).getDest());
+                    prev.add(m.getConnectedTo()[u].get(i).getDest(), u);
                 }
             }
         }
-        return dist.get(dest);
+        int k = 0;
+        while (k <= this.g.nodeSize()) {
+            q.add(k);
+            k++;
+        }
+        while (q.size() != 1) {
+            double min = Double.MAX_VALUE;
+            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
+                if (dist.get(m.getConnectedTo()[u].get(i).getDest()) > m.getConnectedTo()[u].get(i).getWeight() + dist.get(u)) {
+                    double tmpDist = dist.get(u);
+                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
+                    dist.add(m.getConnectedTo()[u].get(i).getDest(), m.getConnectedTo()[u].get(i).getWeight() + tmpDist);
+                }
+                if (q.contains(m.getConnectedTo()[u].get(i).getDest()) && m.getConnectedTo()[u].get(i).getWeight() < min && m.getConnectedTo()[u].get(i).getDest() != src) {
+                    min = m.getConnectedTo()[u].get(i).getWeight();
+                    indx = m.getConnectedTo()[u].get(i).getDest();
+                }
+            }
+            if (u != indx) {
+                u = indx;
+            } else {
+                u = q.peek();
+            }
+            q.remove(u);
+            double alt = 0;
+            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
+                alt = dist.get(u) + m.getConnectedTo()[u].get(i).getWeight();
+                if (alt < dist.get(m.getConnectedTo()[u].get(i).getDest())) {
+                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
+                    dist.add(m.getConnectedTo()[u].get(i).getDest(), alt);
+                }
+            }
+        }
+        return dist;
     }
+
+    public double[] DijkstraMax(int src) {
+        PriorityQueue<Integer> q = new PriorityQueue<>();
+        List<Double> dist = new ArrayList<>();
+        dist = Dijkstra(src);
+        double max = Double.MIN_VALUE;
+        int index = 0;
+        for (double d : dist) {
+            if (d > max && d != Double.MAX_VALUE) {
+                max = d;
+                index = dist.indexOf(d);
+            }
+        }
+        double[] arr = new double[2];
+        arr[0] = index;
+        arr[1] = max;
+        return arr;
+    }
+
+    public List<Integer> DijkstraPrev(int src) {
+        PriorityQueue<Integer> q = new PriorityQueue<>();
+        ArrayList<Double> dist = new ArrayList<>();
+        ArrayList<Integer> prev = new ArrayList<>();
+        Iterator<NodeData> it = this.g.nodeIter();
+        this.save("src/Ex2/data/newJson.json");
+        MyGraph m = new MyGraph("src/Ex2/data/newJson.json");
+        NodeData n = new Node();
+
+        while (it.hasNext()) {
+            n = it.next();
+            if (n.getKey() != src)
+                dist.add(n.getKey(), Double.MAX_VALUE);
+            else {
+                dist.add(n.getKey(), null);
+            }
+            prev.add(n.getKey(), null);
+            q.add(n.getKey());
+        }
+        dist.remove(src);
+        dist.add(src, 0.0);
+        int u = src, indx = 0;
+        it = this.g.nodeIter();
+        while (q.size() != 1) {
+            double min = Double.MAX_VALUE;
+            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
+                if (dist.get(m.getConnectedTo()[u].get(i).getDest()) > m.getConnectedTo()[u].get(i).getWeight() + dist.get(u)) {
+                    double tmpDist = dist.get(u);
+                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
+                    dist.add(m.getConnectedTo()[u].get(i).getDest(), m.getConnectedTo()[u].get(i).getWeight() + tmpDist);
+                    prev.remove(m.getConnectedTo()[u].get(i).getDest());
+                    prev.add(m.getConnectedTo()[u].get(i).getDest(), u);
+                }
+                if (q.contains(m.getConnectedTo()[u].get(i).getDest()) && m.getConnectedTo()[u].get(i).getWeight() < min && m.getConnectedTo()[u].get(i).getDest() != src) {
+                    min = m.getConnectedTo()[u].get(i).getWeight();
+                    indx = m.getConnectedTo()[u].get(i).getDest();
+                }
+            }
+            if (u != indx) {
+                u = indx;
+            } else {
+                u = q.peek();
+            }
+            q.remove(u);
+            min = Double.MAX_VALUE;
+            double alt = 0;
+            it = this.g.nodeIter();
+            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
+                alt = dist.get(u) + m.getConnectedTo()[u].get(i).getWeight();
+                if (alt < dist.get(m.getConnectedTo()[u].get(i).getDest())) {
+                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
+                    dist.add(m.getConnectedTo()[u].get(i).getDest(), alt);
+                    prev.remove(m.getConnectedTo()[u].get(i).getDest());
+                    prev.add(m.getConnectedTo()[u].get(i).getDest(), u);
+                }
+            }
+        }
+        int k = 0;
+        while (k <= this.g.nodeSize()) {
+            q.add(k);
+            k++;
+        }
+        while (q.size() != 1) {
+            double min = Double.MAX_VALUE;
+            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
+                if (dist.get(m.getConnectedTo()[u].get(i).getDest()) > m.getConnectedTo()[u].get(i).getWeight() + dist.get(u)) {
+                    double tmpDist = dist.get(u);
+                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
+                    dist.add(m.getConnectedTo()[u].get(i).getDest(), m.getConnectedTo()[u].get(i).getWeight() + tmpDist);
+                }
+                if (q.contains(m.getConnectedTo()[u].get(i).getDest()) && m.getConnectedTo()[u].get(i).getWeight() < min && m.getConnectedTo()[u].get(i).getDest() != src) {
+                    min = m.getConnectedTo()[u].get(i).getWeight();
+                    indx = m.getConnectedTo()[u].get(i).getDest();
+                }
+            }
+            if (u != indx) {
+                u = indx;
+            } else {
+                u = q.peek();
+            }
+            q.remove(u);
+            min = Double.MAX_VALUE;
+            double alt = 0;
+            it = this.g.nodeIter();
+            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
+                alt = dist.get(u) + m.getConnectedTo()[u].get(i).getWeight();
+                if (alt < dist.get(m.getConnectedTo()[u].get(i).getDest())) {
+                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
+                    dist.add(m.getConnectedTo()[u].get(i).getDest(), alt);
+                    prev.remove(m.getConnectedTo()[u].get(i).getDest());
+                    prev.add(m.getConnectedTo()[u].get(i).getDest(), u);
+                }
+            }
+        }
+        return prev;
+    }
+
+    /*
 
     private int dist(List<Double> dist, PriorityQueue<Integer> q, int src) {
         double min = Double.MAX_VALUE;
@@ -251,128 +441,6 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             }
         }
         return prev;
-    }
-
-    @Override
-    public List<NodeData> shortestPath(int src, int dest) {
-        List<Integer> path = shortestPathHelper(src, dest);
-        List<NodeData> ans = new ArrayList<>();
-        int tmp = dest;
-        while (tmp != src || this.g.getEdge(src, tmp) != null) {
-            ans.add(this.g.getNode(tmp));
-            tmp = path.get(tmp);
-        }
-        ans.add(this.g.getNode(tmp));
-        return ans;
-    }
-
-    public List<Double> Dijkstra(int src) {
-        PriorityQueue<Integer> q = new PriorityQueue<>();
-        ArrayList<Double> dist = new ArrayList<>();
-        ArrayList<NodeData> prev = new ArrayList<>();
-        Iterator<NodeData> it = this.g.nodeIter();
-        this.save("src/Ex2/data/newJson.json");
-        MyGraph m = new MyGraph("src/Ex2/data/newJson.json");
-        NodeData n = new Node();
-
-        while (it.hasNext()) {
-            n = it.next();
-            if (n.getKey() != src)
-                dist.add(n.getKey(), Double.MAX_VALUE);
-            else {
-                dist.add(n.getKey(), null);
-            }
-            prev.add(n.getKey(), null);
-            q.add(n.getKey());
-        }
-        dist.remove(src);
-        dist.add(src, 0.0);
-        int u = src, indx = 0;
-        it = this.g.nodeIter();
-        while (q.size() != 1) {
-            double min = Double.MAX_VALUE;
-            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
-                if (dist.get(m.getConnectedTo()[u].get(i).getDest()) > m.getConnectedTo()[u].get(i).getWeight() + dist.get(u)) {
-                    double tmpDist = dist.get(u);
-                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
-                    dist.add(m.getConnectedTo()[u].get(i).getDest(), m.getConnectedTo()[u].get(i).getWeight() + tmpDist);
-                }
-                if (q.contains(m.getConnectedTo()[u].get(i).getDest()) && m.getConnectedTo()[u].get(i).getWeight() < min && m.getConnectedTo()[u].get(i).getDest() != src) {
-                    min = m.getConnectedTo()[u].get(i).getWeight();
-                    indx = m.getConnectedTo()[u].get(i).getDest();
-                }
-            }
-            if (u != indx) {
-                u = indx;
-            } else {
-                u = q.peek();
-            }
-            q.remove(u);
-            min = Double.MAX_VALUE;
-            double alt = 0;
-            it = this.g.nodeIter();
-            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
-                alt = dist.get(u) + m.getConnectedTo()[u].get(i).getWeight();
-                if (alt < dist.get(m.getConnectedTo()[u].get(i).getDest())) {
-                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
-                    dist.add(m.getConnectedTo()[u].get(i).getDest(), alt);
-                }
-            }
-        }
-        int k = 0;
-        while (k<=this.g.nodeSize()) {
-            q.add(k);
-            k++;
-        }
-        while (q.size() != 1) {
-            double min = Double.MAX_VALUE;
-            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
-                if (dist.get(m.getConnectedTo()[u].get(i).getDest()) > m.getConnectedTo()[u].get(i).getWeight() + dist.get(u)) {
-                    double tmpDist = dist.get(u);
-                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
-                    dist.add(m.getConnectedTo()[u].get(i).getDest(), m.getConnectedTo()[u].get(i).getWeight() + tmpDist);
-                }
-                if (q.contains(m.getConnectedTo()[u].get(i).getDest()) && m.getConnectedTo()[u].get(i).getWeight() < min && m.getConnectedTo()[u].get(i).getDest() != src) {
-                    min = m.getConnectedTo()[u].get(i).getWeight();
-                    indx = m.getConnectedTo()[u].get(i).getDest();
-                }
-            }
-            if (u != indx) {
-                u = indx;
-            } else {
-                u = q.peek();
-            }
-            q.remove(u);
-            min = Double.MAX_VALUE;
-            double alt = 0;
-            it = this.g.nodeIter();
-            for (int i = 0; i < m.getConnectedTo()[u].size(); i++) {
-                alt = dist.get(u) + m.getConnectedTo()[u].get(i).getWeight();
-                if (alt < dist.get(m.getConnectedTo()[u].get(i).getDest())) {
-                    dist.remove(m.getConnectedTo()[u].get(i).getDest());
-                    dist.add(m.getConnectedTo()[u].get(i).getDest(), alt);
-                }
-            }
-        }
-        return dist;
-    }
-
-    public double[] DijkstraMax(int src) {
-        PriorityQueue<Integer> q = new PriorityQueue<>();
-        List<Double> dist = new ArrayList<>();
-        dist = Dijkstra(src);
-        double max = Double.MIN_VALUE;
-        int index = 0;
-        for (double d : dist) {
-            if (d > max && d != Double.MAX_VALUE) {
-                max = d;
-                index = dist.indexOf(d);
-            }
-        }
-        double[] arr = new double[2];
-        arr[0] = index;
-        arr[1] = max;
-        return arr;
     }
 
     private double[] shortestPathList(int src) {
@@ -487,6 +555,8 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         return dist;
     }
 
+
+     */
     @Override
     public NodeData center() {
         if (this.isConnected()) {
@@ -517,7 +587,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         int src = 0, dest = 0;
         double min = Double.MAX_VALUE;
         for (NodeData n : cities) {
-            dist.put(n.getKey(), shortestPathListDist(n.getKey()));
+            dist.put(n.getKey(), Dijkstra(n.getKey()));
         }
         Iterator<Integer> itrNode = dist.keySet().iterator();
 
@@ -565,7 +635,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             k = 0;
             minDest = Double.MAX_VALUE;
             for (NodeData n : citiesCopy) {
-                tmpDest = shortestPathListDist(check);
+                tmpDest = Dijkstra(check);
                 if (tmpDest.get(n.getKey()) < minDest) {
                     minDest = tmpDest.get(n.getKey());
                     indx = n.getKey();
@@ -598,7 +668,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             return false;
         }
     }
-
+/*
     public void BFS(DirectedWeightedGraph g, int n) {
         Queue<Integer> queue = new LinkedList<Integer>();
         boolean nodes[] = new boolean[g.nodeSize()];
@@ -623,5 +693,5 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             }
         }
     }
-
+*/
 }

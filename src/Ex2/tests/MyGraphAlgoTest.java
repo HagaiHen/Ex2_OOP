@@ -133,21 +133,4 @@ class MyGraphAlgoTest {
         assertEquals(0.4303080890843676, this.g.getEdge(21, 33).getWeight());
     }
 
-    @Test
-    void BFS() {
-        MyGraphAlgo graph = new MyGraphAlgo(g);
-        graph.BFS(g, 2);
-        System.out.println(g.getNode(2).getTag());
-    }
-
-    @Test
-    void DFS() {
-        HashSet<Integer> visited = new HashSet<>();
-        Queue<NodeData> qu = new LinkedList<>();
-        qu.add(g.getNode(0));
-        g2.DFS(visited, qu);
-        assertEquals(visited.size(), g2.getGraph().nodeSize());
-
-    }
-
 }

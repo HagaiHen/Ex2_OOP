@@ -189,7 +189,6 @@ public class MyGraph implements DirectedWeightedGraph {
         this.nodes.remove(key);
         MC++;
         int size = this.ConnectedTo[key].size();
-
         for (int i = 0; i < size; i++) {
             removeEdge(this.ConnectedTo[key].get(i).getSrc(), this.ConnectedTo[key].get(i).getDest());
         }
